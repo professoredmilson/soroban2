@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -10,12 +9,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
         }
         .container {
             text-align: center;
+            max-width: 600px;
+            padding: 20px;
         }
         .soroban {
             display: flex;
@@ -56,9 +57,16 @@
             font-size: 16px;
             cursor: pointer;
         }
-        #message {
+        #message, #explanation {
             margin-top: 20px;
             font-weight: bold;
+        }
+        #explanation {
+            text-align: left;
+            display: none;
+            background-color: #e9e9e9;
+            padding: 15px;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -69,15 +77,31 @@
             <button onclick="startPractice()">Treinar</button>
             <button onclick="startAddition()">Adição</button>
             <button onclick="checkAnswer()">Conferir</button>
+            <button onclick="toggleExplanation()">Como Funciona</button>
         </div>
         <div id="target"></div>
         <div id="message"></div>
+        <div id="explanation">
+            <h3>Como funciona o Soroban:</h3>
+            <p>O Soroban é um ábaco japonês usado para cálculos aritméticos. Nesta versão digital:</p>
+            <ul>
+                <li>Há 5 colunas, cada uma representando uma potência de 10 (unidades, dezenas, centenas, etc.).</li>
+                <li>Cada coluna tem 1 conta superior (marrom) que vale 5, e 4 contas inferiores (laranja) que valem 1 cada.</li>
+                <li>Clique nas contas para selecioná-las. Contas ativas são coloridas, inativas são cinzas.</li>
+                <li>Para representar um número, selecione as contas. Por exemplo, para representar 3, selecione 3 contas inferiores na coluna mais à direita.</li>
+                <li>Use o botão "Treinar" para praticar a representação de números aleatórios.</li>
+                <li>Use o botão "Adição" para praticar somas de dois números aleatórios.</li>
+                <li>Após representar o número ou a soma, clique em "Conferir" para verificar sua resposta.</li>
+            </ul>
+            <p>Com prática, você poderá realizar cálculos rapidamente usando o Soroban!</p>
+        </div>
     </div>
 
     <script>
         const soroban = document.getElementById('soroban');
         const targetDiv = document.getElementById('target');
         const messageDiv = document.getElementById('message');
+        const explanationDiv = document.getElementById('explanation');
         let beads = Array(5).fill().map(() => ({ top: 0, bottom: 0 }));
         let targetNumber = null;
         let mode = 'practice';
@@ -159,6 +183,10 @@
             const isCorrect = currentValue === targetNumber;
             messageDiv.textContent = isCorrect ? 'Correto!' : 'Incorreto. Tente novamente.';
             messageDiv.style.color = isCorrect ? 'green' : 'red';
+        }
+
+        function toggleExplanation() {
+            explanationDiv.style.display = explanationDiv.style.display === 'none' ? 'block' : 'none';
         }
 
         createSoroban();
