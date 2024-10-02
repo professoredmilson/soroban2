@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soroban Digital</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+        }
+        .soroban {
+            display: flex;
+            justify-content: center;
+            background-color: #d2b48c;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 5px;
+        }
+        .bead {
+            width: 30px;
+            height: 15px;
+            border-radius: 50%;
+            margin: 2px 0;
+            cursor: pointer;
+        }
+        .top-bead {
+            background-color: #8B4513;
+        }
+        .bottom-bead {
+            background-color: #FFA500;
+        }
+        .inactive {
+            background-color: #808080;
+        }
+        .spacer {
+            height: 10px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="soroban" id="soroban"></div>
+        <div>
+            <button onclick="startPractice()">Treinar</button>
+            <button onclick="startAddition()">Adição</button>
+            <button onclick="checkAnswer()">Conferir</button>
+        </div>
+        <div id="target"></div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        const soroban = document.getElementById('soroban');
+        const targetDiv = document.getElementById('target');
+        const messageDiv = document.getElementById('message');
+        let beads = Array(5).fill().map(() => ({ top: 0, bottom: 0 }));
+        let targetNumber = null;
+        let mode = 'practice';
+
+        function createSoroban() {
+            soroban.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const column = document.createElement('div');
+                column.className = 'column';
+                
+                const topBead = createBead(i, 'top', 'top-bead');
+                column.appendChild(topBead);
+                
+                const spacer = document.createElement('div');
+                spacer.className = 'spacer';
+                column.appendChild(spacer);
+                
+                for (let j = 0; j < 4; j++) {
+                    const bottomBead = createBead(i, j, 'bottom-bead');
+                    column.appendChild(bottomBead);
+                }
+                
+                soroban.appendChild(column);
+            }
+            updateSoroban();
+        }
+
+        function createBead(column, position, className) {
+            const bead = document.createElement('div');
+            bead.className = `bead ${className} inactive`;
+            bead.onclick = () => toggleBead(column, position);
+            return bead;
+        }
+
+        function toggleBead(column, position) {
+            if (position === 'top') {
+                beads[column].top = 1 - beads[column].top;
+            } else {
+                beads[column].bottom = Math.min(4, Math.max(0, beads[column].bottom + (beads[column].bottom > position ? -1 : 1)));
+            }
+            updateSoroban();
+        }
+
+        function updateSoroban() {
+            const columns = soroban.children;
+            for (let i = 0; i < 5; i++) {
+                const beadsInColumn = columns[i].getElementsByClassName('bead');
+                beadsInColumn[0].classList.toggle('inactive', beads[i].top === 0);
+                for (let j = 1; j < 5; j++) {
+                    beadsInColumn[j].classList.toggle('inactive', beads[i].bottom < j);
+                }
+            }
+        }
+
+        function generateNumber(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        function startPractice() {
+            targetNumber = generateNumber(100000);
+            mode = 'practice';
+            targetDiv.textContent = `Represente: ${targetNumber}`;
+            messageDiv.textContent = '';
+        }
+
+        function startAddition() {
+            const num1 = generateNumber(50000);
+            const num2 = generateNumber(50000);
+            targetNumber = num1 + num2;
+            mode = 'addition';
+            targetDiv.textContent = `Some: ${num1} + ${num2}`;
+            messageDiv.textContent = '';
+        }
+
+        function checkAnswer() {
+            const currentValue = beads.reduce((acc, col, index) => {
+                return acc + (col.top + col.bottom) * Math.pow(10, 4 - index);
+            }, 0);
+            const isCorrect = currentValue === targetNumber;
+            messageDiv.textContent = isCorrect ? 'Correto!' : 'Incorreto. Tente novamente.';
+            messageDiv.style.color = isCorrect ? 'green' : 'red';
+        }
+
+        createSoroban();
+    </script>
+</body>
+</html>
