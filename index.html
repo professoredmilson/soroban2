@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -165,6 +166,7 @@
             mode = 'practice';
             targetDiv.textContent = `Represente: ${targetNumber}`;
             messageDiv.textContent = '';
+            resetSoroban();
         }
 
         function startAddition() {
@@ -174,15 +176,28 @@
             mode = 'addition';
             targetDiv.textContent = `Some: ${num1} + ${num2}`;
             messageDiv.textContent = '';
+            resetSoroban();
+        }
+
+        function resetSoroban() {
+            beads = Array(5).fill().map(() => ({ top: 0, bottom: 0 }));
+            updateSoroban();
         }
 
         function checkAnswer() {
-            const currentValue = beads.reduce((acc, col, index) => {
-                return acc + (col.top + col.bottom) * Math.pow(10, 4 - index);
-            }, 0);
+            const currentValue = calculateSorobanValue();
             const isCorrect = currentValue === targetNumber;
-            messageDiv.textContent = isCorrect ? 'Correto!' : 'Incorreto. Tente novamente.';
+            messageDiv.textContent = isCorrect 
+                ? 'Correto!' 
+                : `Incorreto. Sua resposta: ${currentValue}, Resposta correta: ${targetNumber}`;
             messageDiv.style.color = isCorrect ? 'green' : 'red';
+        }
+
+        function calculateSorobanValue() {
+            return beads.reduce((acc, col, index) => {
+                const columnValue = col.top * 5 + col.bottom;
+                return acc + columnValue * Math.pow(10, 4 - index);
+            }, 0);
         }
 
         function toggleExplanation() {
